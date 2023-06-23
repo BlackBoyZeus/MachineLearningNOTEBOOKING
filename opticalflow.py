@@ -87,4 +87,4 @@ measure_object_speed(video_path)
 
 #Uses a more robust object tracking algorithm. The current implementation uses the Lucas-Kanade algorithm, which is sensitive to noise and occlusion. You can use a more robust object tracking algorithm, such as CSRT or KCF, to track the object's position more reliably.
 #Uses a more sophisticated visualization of the results. The current implementation simply displays the object speed on the frame. You can use a more sophisticated visualization, such as a tracking plot, to show the evolution of the object's speed over time.
-#Adds more error handling. The current implementation does not handle errors very well. For example, if the video file cannot be opened or if the object cannot be tracked, the program will crash. You can add more error handling to the code to make it more robust.
+#Adds more error handling. The prior implementation did not handle errors very well. For example, if the video file cannot be opened or if the object cannot be tracked, the program will crash. You can add more error handling to the code to make it more robust.
