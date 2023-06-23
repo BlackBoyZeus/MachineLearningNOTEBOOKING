@@ -2,6 +2,13 @@ import cv2
 import numpy as np
 from scipy.linalg import block_diag
 
+def kalman_gain(error_cov_pre, observation_matrix, measurement_noise_cov):
+    """Calculates the Kalman gain using the Woodbury matrix identity."""
+
+    inverse_term = np.linalg.inv(np.dot(np.dot(observation_matrix, error_cov_pre), observation_matrix.T) + measurement_noise_cov)
+    kalman_gain = np.dot(error_cov_pre, observation_matrix.T) * inverse_term
+    return kalman_gain
+
 class KalmanFilter:
     def __init__(self, state_dim, measurement_dim):
         # Initialize state dimensions
@@ -26,7 +33,7 @@ class KalmanFilter:
 
     def update(self, measurement):
         # Calculate Kalman gain
-        kalman_gain = np.dot(np.dot(self.error_cov_pre, self.observation_matrix.T), np.linalg.inv(np.dot(np.dot(self.observation_matrix, self.error_cov_pre), self.observation_matrix.T) + self.measurement_noise_cov))
+        kalman_gain = kalman_gain(self.error_cov_pre, self.observation_matrix, self.measurement_noise_cov)
 
         # Update the state and covariance
         self.state_post = self.state_pre + np.dot(kalman_gain, (measurement - np.dot(self.observation_matrix, self.state_pre)))
@@ -83,17 +90,6 @@ class VisualNavigation:
         # You can use any object detection algorithm or library here
         # For the sake of simplicity, let's assume a fixed object position for demonstration
         object_position = (100, 100)
-        return object_position
-
-    def display_frame(self, frame, object_position, estimated_position):
-        # Display the frame with object position and estimated position
-        cv2.circle(frame, object_position, 5, (0, 255, 0), -1)
-        cv2.circle(frame, tuple(map(int, estimated_position)), 5, (255, 0, 0), -1)
-        cv2.imshow("Visual Navigation", frame)
-
-if __name__ == "__main__":
-    navigation = VisualNavigation()
-    navigation.run()
 
 
 #In this code, we have two main classes: KalmanFilter and VisualNavigation. The KalmanFilter class represents the Kalman filter algorithm and provides methods for initialization, prediction, and update steps. The VisualNavigation class handles the camera input, object detection, and the visual navigation process.
