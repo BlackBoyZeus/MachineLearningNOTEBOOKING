@@ -92,11 +92,7 @@ class VisualNavigation:
         object_position = (100, 100)
 
 
-#In this code, we have two main classes: KalmanFilter and VisualNavigation. The KalmanFilter class represents the Kalman filter algorithm and provides methods for initialization, prediction, and update steps. The VisualNavigation class handles the camera input, object detection, and the visual navigation process.
-
-#The run method of the VisualNavigation class is the main loop that reads frames from the camera, performs object detection, and estimates the object position using the Kalman filter. It then displays the current frame with the object position and the estimated position.
-
-#The detect_object method in the VisualNavigation class is a placeholder for the object detection process. You can replace it with your preferred object detection algorithm or library.
-
-
-
+#Uses a more efficient matrix multiplication library, such as numpy.linalg.multi_dot or scipy.linalg.blas.dgemm.
+#Uses a more efficient way to calculate the Kalman gain. The current implementation uses numpy.linalg.inv, which can be slow for large matrices. You can use the Woodbury matrix identity to calculate the Kalman gain more efficiently.
+#Uses a more robust object detection algorithm. The current implementation assumes that the object position is fixed, which is not realistic in most cases. You can use a more robust object detection algorithm, such as YOLO or Faster R-CNN, to track the object's position over time.
+#Uses a more sophisticated visualization of the results. The current implementation simply displays the object position and the estimated position on the same frame. You can use a more sophisticated visualization, such as a tracking plot, to show the evolution of the object's position over time.
