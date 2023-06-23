@@ -19,10 +19,13 @@ for image_file in images:
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     ret, corners = cv2.findChessboardCorners(gray, pattern_size, None)
 
-    # If corners are found, add object points and image points
+    # If corners are found, refine them using cornerSubPix
     if ret:
+        corners_refined = cv2.cornerSubPix(
+            gray, corners, (11, 11), (-1, -1), criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 30, 0.001)
+        )
         object_points.append(pattern_points)
-        image_points.append(corners)
+        image_points.append(corners_refined)
 
 # Calibrate camera
 ret, camera_matrix, dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(
@@ -44,14 +47,28 @@ mean_error /= len(object_points)
 print("Camera Matrix:\n", camera_matrix)
 print("Distortion Coefficients:\n", dist_coeffs)
 print("Mean Projection Error:", mean_error)
-#n this code, we first generate a checkerboard pattern using the specified pattern size and square size. We then initialize arrays to store the object points and image points.
 
-#We load a series of images containing the checkerboard pattern and find the corners of the checkerboard using the cv2.findChessboardCorners function. If the corners are found, we add the corresponding object points and image points to their respective arrays.
+# Use a more robust checkerboard detection algorithm.
+# The cv2.findChessboardCorners function is not very robust to noise and occlusion.
+# You can use a more robust checkerboard detection algorithm, such as the cv2.cornerSubPix function,
+# to improve the accuracy of the calibration results.
 
-#Next, we calibrate the camera using the cv2.calibrateCamera function, which returns the camera matrix, distortion coefficients, rotation vectors, and translation vectors.
+# For example, the cv2.cornerSubPix function can be used to refine the checkerboard corners,
+# which results in a more accurate calibration.
 
-#Finally, we calculate the projection errors for each image by projecting the object points onto the image plane using the cv2.projectPoints function. We compute the mean error by calculating the Euclidean distance between the projected image points and the actual image points.
+# Use a more sophisticated camera calibration algorithm.
+# The cv2.calibrateCamera function is a basic camera calibration algorithm.
+# You can use a more sophisticated camera calibration algorithm, such as the Zhang Zhang algorithm,
+# to improve the accuracy of the calibration results.
 
-#The camera matrix, distortion coefficients, and mean projection error are then printed as the calibration results.
+# For example, the Zhang Zhang algorithm takes into account the radial distortion of the camera lens,
+# which can improve the accuracy of the calibration results.
 
-#Please note that you will need to provide actual image files for the images list, and adjust the pattern_size and square_size variables according to your specific checkerboard pattern.
+# Use a more robust error calculation algorithm.
+# The cv2.norm function is used to calculate the Euclidean distance between the projected image points
+# and the actual image points.
+# You can use a more robust error calculation algorithm, such as the Sampson error,
+# to improve the accuracy of the calibration results.
+
+# For example, the Sampson error takes into account the radial distortion of the camera lens,
+# which can improve the accuracy of the calibration results.
