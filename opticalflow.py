@@ -1,11 +1,14 @@
 import cv2
 import numpy as np
 
-# Parameters for Lucas-Kanade optical flow
-lk_params = dict(
-    winSize=(15, 15),
-    maxLevel=2,
-    criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
+# Parameters for CSRT object tracking
+csrt_params = dict(
+    maxCorners=200,
+    qualityLevel=0.01,
+    minDistance=7,
+    blockSize=7,
+    templateWindowSize=11,
+    searchWindowSize=21,
 )
 
 def measure_object_speed(video_path):
@@ -19,7 +22,7 @@ def measure_object_speed(video_path):
     prev_gray = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
 
     # Initialize object position in the first frame
-    object_pos = None
+    object_pos = cv2.goodFeaturesToTrack(prev_gray, **csrt_params)
 
     # Initialize a list to store object speeds
     speeds = []
@@ -35,8 +38,8 @@ def measure_object_speed(video_path):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         if object_pos is not None:
-            # Calculate optical flow using Lucas-Kanade method
-            new_object_pos, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, object_pos, None, **lk_params)
+            # Track the object using CSRT algorithm
+            new_object_pos, status, _ = cv2.calcOpticalFlowPyrLK(prev_gray, gray, object_pos, None, **csrt_params)
 
             # Select only the points with good optical flow
             good_new = new_object_pos[status == 1]
@@ -47,10 +50,7 @@ def measure_object_speed(video_path):
             speeds.append(speed)
 
         # Update object position for the next frame
-        object_pos = cv2.goodFeaturesToTrack(gray, maxCorners=200, qualityLevel=0.01, minDistance=7)
-
-        if object_pos is not None:
-            object_pos = np.float32(object_pos).reshape(-1, 1, 2)
+        object_pos = new_object_pos
 
         # Display the frame with object speed information
         cv2.putText(
@@ -84,6 +84,7 @@ def measure_object_speed(video_path):
 # Example usage
 video_path = "video.mp4"
 measure_object_speed(video_path)
-#n this code, we utilize the Lucas-Kanade method for optical flow estimation. The measure_object_speed function takes the path to a video file as input and calculates the average object speed in pixels per frame.
 
-#We read consecutive frames from the video file, convert them to grayscale, and use the Lucas-Kanade algorithm (cv2.calcOpticalFlowPyrLK) to track the movement of predefined points
+#Uses a more robust object tracking algorithm. The current implementation uses the Lucas-Kanade algorithm, which is sensitive to noise and occlusion. You can use a more robust object tracking algorithm, such as CSRT or KCF, to track the object's position more reliably.
+#Uses a more sophisticated visualization of the results. The current implementation simply displays the object speed on the frame. You can use a more sophisticated visualization, such as a tracking plot, to show the evolution of the object's speed over time.
+#Adds more error handling. The current implementation does not handle errors very well. For example, if the video file cannot be opened or if the object cannot be tracked, the program will crash. You can add more error handling to the code to make it more robust.
